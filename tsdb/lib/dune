@@ -1,0 +1,6 @@
+(include_subdirs unqualified)
+(library
+ (name tsdb)
+ (preprocess (pps ppx_deriving.show ppx_bin_prot))
+ (libraries  bin_prot bigstring  base containers batteries mtime bigarray timedesc)
+)
