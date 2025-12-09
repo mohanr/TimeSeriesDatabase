@@ -4,7 +4,7 @@ open Bigarray
 module  Datapoint_vector = CCVector
 
 type data_point= {
-	tstamp  :    int64;
+	tstamp  :    float;
 	value :   int64;
 }
 [@@deriving bin_io]
@@ -13,7 +13,7 @@ module Compressed_data_vector =  CCVector
 
 type timeseries_block = {
 
-    start_time : int64;
+    start_time : float;
 
     points: data_point Datapoint_vector.vector;
 
@@ -28,7 +28,7 @@ type time_series = {
 
     key : string;
 
-    active_block: timeseries_block ;
+    mutable active_block: timeseries_block ;
 
     closed_blocks:timeseries_block Timeseries_block_vector.vector;
 
