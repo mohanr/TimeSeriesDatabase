@@ -62,7 +62,7 @@ let get_points timeseries start e_nd =
     in
     CCVector.filter ( fun dp -> overlaps dp.tstamp ) timeseries
 
-let  insert time_s timestamp value =
+let  insert_data_point time_s timestamp value =
       let dp = { tstamp = timestamp; value = value } in
       match (time_since timestamp) with
       (* I should use the time API to check this. *)
@@ -88,6 +88,38 @@ let query start en_d blocks =
                             start en_d);
 
         results
+
+let  get ts_map key =
+  match( Indice_map.find_opt key ts_map.index_map) with
+  | Some index ->
+             Indice_vector.get ts_map.series_vector (Int64.to_int index)
+  | None -> failwith "Index doesn't exist"
+
+let insert ts ts_map key timestamp value =
+  let index =  get ts_map key in
+  match ( CCVector.exists (fun ts -> true ) ts_map.series_vector ) with
+  | true ->  insert_data_point ts timestamp value
+  | false ->
+            let  series = new_time_series  key in
+            let () = insert_data_point series timestamp value in
+            let index = CCVector.pop ts_map.free_indices in
+            match index with
+            |Some i ->
+                CCVector.set ts_map.series_vector (Int64.to_int i) (Some series)
+            |None ->
+                let() = CCVector.push ts_map.series_vector (Some series) in
+                ts_map.index_map <- Indice_map.update key (fun _ -> index) ts_map.index_map
+
+
+(* Read paper to understand tombstones *)
+let delete ts ts_map key =
+  match( Indice_map.find_opt key ts_map.index_map ) with
+  | Some index ->
+            let () = CCVector.set ts_map.series_vector ts None in
+            let () = CCVector.push ts_map.free_indices index in
+            Indice_map.remove key ts_map.index_map
+  | None -> failwith "Key to be delete is not found"
+
 
 end
 
