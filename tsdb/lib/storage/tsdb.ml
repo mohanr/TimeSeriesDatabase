@@ -120,6 +120,16 @@ let delete ts ts_map key =
             Indice_map.remove key ts_map.index_map
   | None -> failwith "Key to be delete is not found"
 
+open Scan.Scan
+let scan ts_map =                      (*  TODO Pass a function*)
+  let p,r = make() in
+  let count() =
+     p
+  in
+  let scanned_result() =
+    let() = resolve r 1  in r
+  in
+   count()  >>= fun x -> scanned_result()
 
 end
 
