@@ -34,6 +34,15 @@ type time_series = {
 
 }
 
+type compression_stats = {
+
+    original_size: int64;
+
+    compressed_size: int64;
+
+    compression_ratio:  ((float,float64_elt, c_layout) Array1.t) Compressed_data_vector.vector;
+}
+
 module  Timeseries_vector = CCVector
 
 module  Timeseriesmap = struct
@@ -55,6 +64,18 @@ type  time_series_map = {
     free_indices: int64 Indice_vector.vector;
 }
 
+module  Buffer_vector = CCVector
+
+type bit_writer = {
+
+    buffer: ((int,int8_unsigned_elt, c_layout) Array1.t) Buffer_vector.vector;
+
+    current_byte:  (int,int8_unsigned_elt, c_layout) Array1.t;
+
+    bit_position: (int,int8_unsigned_elt, c_layout) Array1.t;
+}
+
+(*  TODO Enhance this inferface*)
 module type TSDBOperator = sig
   val time_series : unit -> timeseries_block
 end
