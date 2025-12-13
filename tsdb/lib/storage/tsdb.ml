@@ -123,13 +123,18 @@ let delete ts ts_map key =
 open Scan.Scan
 let scan ts_map =                      (*  TODO Pass a function*)
   let p,r = make() in
-  let count() =
+  let promise_extract_value v=
+   Printf.printf "%d" v;
+   r
+  in
+  let count_promise() =
      p
   in
-  let scanned_result() =
-    let() = resolve r 1  in r
+  let  scanned_result() =
+    return (CCVector.size ts_map.series_vector )
   in
-   count()  >>= fun x -> scanned_result()
+   count_promise()  >>= fun _  -> scanned_result()
+   >>= fun v -> promise_extract_value v;
 
 end
 
