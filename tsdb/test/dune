@@ -1,2 +1,6 @@
-(test
- (name test_tsdb))
+(library
+ (name test_tsdb)
+ (libraries fmt tsdb )
+ (inline_tests)
+ (preprocess (pps ppx_bin_prot ppx_deriving.show ppx_inline_test ppx_assert ppx_expect))
+ (modules test_tsdb))

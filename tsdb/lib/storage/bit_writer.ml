@@ -30,9 +30,9 @@ let write_bit buf bit =
             Array1.set buf.bit_position 0 0;
         ) else ()
 
-let  write_bits buf value bits =
-        for i = bits to 0 do
-            let bit = ((Int.logand (Int.shift_right_logical value  i)  1) == 1) in
+let  write_bits buf bits =
+        for i = Array1.dim bits to 0 do
+            let bit = (Int.equal(Int.logand (Int.shift_right_logical (Array1.get bits i)  1)  1) 1 ) in
             write_bit buf bit
         done
 
