@@ -28,6 +28,22 @@ let write_bit buf bit =
             CCVector.push buf.buffer buf.current_byte;
             Array1.set buf.current_byte 0 0;
             Array1.set buf.bit_position 0 0;
-        );
+        ) else ()
+
+let  write_bits buf value bits =
+        for i = bits to 0 do
+            let bit = ((Int.logand (Int.shift_right_logical value  i)  1) == 1) in
+            write_bit buf bit
+        done
+
+let push_to_buffer buf =
+        let bp = Array1.get buf.bit_position 0 in
+        if bp > 0 then
+            CCVector.push buf.buffer buf.current_byte;
+        buf.buffer
+
+let bit_count buf =
+        let bp = Array1.get buf.bit_position 0 in
+        CCVector.length buf.buffer * 8 + bp
 
 end
