@@ -15,6 +15,15 @@ let%expect_test "Test Set and Get keys"=
         write_bits buf bit_array;
 
         let buffer = push_to_buffer buf in
-        CCVector.iteri ( fun i b -> Printf.printf "%d" (Array1.get b i) ) buffer;
+        Printf.printf "Length %d\n" (CCVector.length buffer);
+        CCVector.iteri ( fun i b -> Printf.printf "[%d] %d" i (Array1.get b i) ) buffer;
 
-        [%expect {| 32 |}]
+        [%expect {|
+           Array1.dim bits 4
+           bit is false
+           bit is false
+           bit is false
+           bit is false
+          Length 1
+          [0] 14
+          |}]
