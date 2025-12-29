@@ -3,7 +3,7 @@ open Bigarray
 
 module BITWRITER = struct
 
-  let new_buffer() =
+  let new_write_buffer() =
     {
             buffer =  Buffer_vector.create();
 
@@ -26,7 +26,7 @@ let int2bin =
     | None -> "0b0"
     | Some i -> "0b" ^ Bytes.sub_string buf i (int_size - i)
 
-let write_bit buf bit =
+let write_bit (buf : bit_writer) bit =
         if bit then(
             let bp = Array1.get buf.bit_position 0 in
             let cb = Array1.get buf.current_byte 0 in
@@ -36,7 +36,6 @@ let write_bit buf bit =
          let bp = Array1.get buf.bit_position 0 in
          Array1.set buf.bit_position 0 (Int.add bp  1);
 
-        Printf.printf "Size if %d\n"   (Array1.get buf.bit_position 0);
         if Int.equal( Array1.get buf.bit_position 0)  8 then(
             CCVector.push buf.buffer buf.current_byte;
             Array1.set buf.current_byte 0 0;
@@ -51,7 +50,7 @@ let  write_bits buf bits =
             write_bit buf bit
         done
 
-let push_to_buffer buf =
+let push_to_buffer (buf : bit_writer) =
         let bp = Array1.get buf.bit_position 0 in
         if bp > 0 then
             CCVector.push buf.buffer buf.current_byte;
