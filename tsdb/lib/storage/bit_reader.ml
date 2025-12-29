@@ -14,6 +14,7 @@ module BITREADER = struct
 
 let read_bit buf =
         let bp = Array1.get buf.bit_position 0 in
+        let ()= Printf.printf "bp %d len %d\n" bp (CCVector.length buf.buffer) in
         if bp >= CCVector.length buf.buffer then
             None
         else
@@ -34,19 +35,18 @@ let read_bit buf =
 
         Some bit
 
-let  read_bits buf bits =
-        Printf.printf " Array1.dim bits %d\n" ( Array1.dim bits );
-        let value = 0 in
+let read_bits buf bits =
+        let value = 0L in
         let rec loop_while idx acc =
         if idx <  (Array1.dim bits) - 1 then
             (match read_bit buf with
             |Some _ ->
-            let value = Int.logor (Int.shift_left acc  1) 1 in
+            let value = Int64.logor (Int64.shift_left acc  1) 1L in
             loop_while (idx+1) value
             | None ->
             loop_while (idx+1) value
             )
         else acc
         in
-        loop_while 0 0
+        loop_while 0 0L
 end
