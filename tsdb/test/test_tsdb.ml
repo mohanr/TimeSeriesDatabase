@@ -5,15 +5,12 @@ open Tsdb__Bit_reader.BITREADER
 let%expect_test "Test Set and Get keys"=
 
         let buf = new_write_buffer() in
-        let bit_array = Array1.create int8_unsigned c_layout 4 in
-        Array1.set bit_array 0 1;
-        Array1.set bit_array 1 0;
-        Array1.set bit_array 2 1;
-        Array1.set bit_array 3 0;
+        let bitfield = Array1.create Int32 c_layout 1 in
+        bitfield.{0} <- Int32.of_int 0b1010;
         write_bit buf true;
         write_bit buf false;
         write_bit buf true;
-        write_bits buf bit_array;
+        write_bits buf bitfield 4;
 
         let buffer = push_to_buffer buf in
         let read_buffer = new_read_buffer buffer in
@@ -32,17 +29,17 @@ let%expect_test "Test Set and Get keys"=
         | Some b -> Printf.printf "%b " b
         | None -> Printf.printf "None " ;
         in
-        Printf.printf "Bits %Ld\n" (read_bits read_buffer bit_array);
+        Printf.printf "Bits %s\n" (int2bin (Int64.to_int (read_bits read_buffer 4)));
   [%expect {|
-    write_bit 0b10000000
-    write_bit 0b10100000
-    write_bit 0b10100010
-    read_bit 0b10100010
-    None read_bit 0b10100010
-    None read_bit 0b10100010
-    None read_bit 0b10100010
-    read_bit 0b10100010
-    read_bit 0b10100010
-    Bits 0
+    write_bit 128 0b000000000000000000000000000000000000000000000000000000010000000
+    write_bit 160 0b000000000000000000000000000000000000000000000000000000010100000
+    write_bit 176 0b000000000000000000000000000000000000000000000000000000010110000
+    write_bit 180 0b000000000000000000000000000000000000000000000000000000010110100
+    read_bit 0b10110100
+    true read_bit 0b10110100
+    false read_bit 0b10110100
+    true read_bit 0b10110100
+    read_bit 0b10110100
+    read_bit 0b10110100
+    Bits 0b111
     |}];
-  [%expect {| |}]

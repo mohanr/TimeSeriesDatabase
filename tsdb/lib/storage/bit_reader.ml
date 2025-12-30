@@ -47,10 +47,10 @@ let read_bit buf =
 
         Some bit
 
-let read_bits buf bits =
+let read_bits buf len=
         let value = 0L in
         let rec loop_while idx acc =
-        if idx <  (Array1.dim bits) - 1 then
+        if idx <  len - 1 then
             (match read_bit buf with
             |Some _ ->
             let value = Int64.logor (Int64.shift_left acc  1) 1L in

@@ -12,7 +12,7 @@ module BITWRITER = struct
             bit_position =  Array1.create int8_unsigned c_layout 1;
     }
 
-  (* This is from OCaml forum *)
+  (* This is fro0 OCaml forum *)
 let int_size = Sys.word_size - 1
 let int2bin =
   let buf = Bytes.create int_size in
@@ -24,16 +24,17 @@ let int2bin =
     (* skip leading zeros *)
     match Bytes.index_opt buf '1' with
     | None -> "0b0"
-    | Some i -> "0b" ^ Bytes.sub_string buf i (int_size - i)
+    (* | Some i -> "0b" ^ Bytes.sub_string buf i (int_size - i) *)
+
+    | Some _i -> "0b" ^ Bytes.to_string buf
 
 let write_bit (buf : bit_writer) bit =
+        let bp = Array1.get buf.bit_position 0 in
         if bit then(
-            let bp = Array1.get buf.bit_position 0 in
             let cb = Array1.get buf.current_byte 0 in
             let () = Array1.set buf.current_byte 0 (Int.logor cb (Int.shift_left 1 (Int.sub 7  bp) )  ) in
-            Printf.printf "write_bit %s\n"  (int2bin (Array1.get buf.current_byte 0));
+            Printf.printf "write_bit %d %s\n"  (Array1.get buf.current_byte 0) (int2bin (Int.logor cb (Int.shift_left 1 (Int.sub 7  bp) )   ));
           );
-         let bp = Array1.get buf.bit_position 0 in
          Array1.set buf.bit_position 0 (Int.add bp  1);
 
         if Int.equal( Array1.get buf.bit_position 0)  8 then(
@@ -42,11 +43,12 @@ let write_bit (buf : bit_writer) bit =
             Array1.set buf.bit_position 0 0;
         ) else ()
 
-let  write_bits buf bits =
-        for i = (Array1.dim bits) - 1 downto 0 do
-            let bit = (Int.equal(Int.logand (Int.shift_right (Array1.get bits i)  i)  1) 1 ) in
-            (* let () = Printf.printf " i is %d bit is %b %d\n" i bit  (Array1.get bits i) in *)
+let  write_bits buf bitfield len =
+        let bits = bitfield.{0} in
+         (* Printf.printf " bit is  %s\n"  (int2bin (Int32.to_int bits)); *)
 
+        for i = len - 1 downto 0 do
+            let bit = (Int32.equal(Int32.logand (Int32.shift_right bits  i)  1l) 1l ) in
             write_bit buf bit
         done
 
@@ -54,7 +56,7 @@ let push_to_buffer (buf : bit_writer) =
         let bp = Array1.get buf.bit_position 0 in
         if bp > 0 then
             CCVector.push buf.buffer buf.current_byte;
-        buf
+        buf.buffer
 
 let bit_count buf =
         let bp = Array1.get buf.bit_position 0 in
