@@ -52,8 +52,8 @@ let read_bits buf len=
         let rec loop_while idx acc =
         if idx <  len - 1 then
             (match read_bit buf with
-            |Some _ ->
-            let value = Int64.logor (Int64.shift_left acc  1) 1L in
+            |Some b ->
+            let value = Int64.logor (Int64.shift_left acc  1) (Int64.of_int (Bool.to_int b)) in
             loop_while (idx+1) value
             | None ->
             loop_while (idx+1) value

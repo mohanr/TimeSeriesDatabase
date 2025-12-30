@@ -29,7 +29,7 @@ let%expect_test "Test Set and Get keys"=
         | Some b -> Printf.printf "%b " b
         | None -> Printf.printf "None " ;
         in
-        Printf.printf "Bits %s\n" (int2bin (Int64.to_int (read_bits read_buffer 4)));
+        Printf.printf "Bits %s\n" (int2bin (Int64.to_int (read_bits read_buffer 6)));
   [%expect {|
     write_bit 128 0b000000000000000000000000000000000000000000000000000000010000000
     write_bit 160 0b000000000000000000000000000000000000000000000000000000010100000
@@ -41,5 +41,7 @@ let%expect_test "Test Set and Get keys"=
     true read_bit 0b10110100
     read_bit 0b10110100
     read_bit 0b10110100
-    Bits 0b111
+    read_bit 0b10110100
+    read_bit 0b10110100
+    Bits 0b10100
     |}];
