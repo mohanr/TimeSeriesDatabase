@@ -16,7 +16,7 @@ let%expect_test "Test Set and Get keys"=
         write_bits buf bit_array;
 
         let buffer = push_to_buffer buf in
-        let read_buffer = new_read_buffer buffer.buffer in
+        let read_buffer = new_read_buffer buffer in
         let () =
         (match (read_bit read_buffer) with
         | Some b -> Printf.printf "%b " b
@@ -37,6 +37,12 @@ let%expect_test "Test Set and Get keys"=
     write_bit 0b10000000
     write_bit 0b10100000
     write_bit 0b10100010
-    false false false Bits 7
+    read_bit 0b10100010
+    None read_bit 0b10100010
+    None read_bit 0b10100010
+    None read_bit 0b10100010
+    read_bit 0b10100010
+    read_bit 0b10100010
+    Bits 0
     |}];
   [%expect {| |}]

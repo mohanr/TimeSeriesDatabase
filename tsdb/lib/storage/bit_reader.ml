@@ -11,22 +11,36 @@ module BITREADER = struct
 
             bit_position =  Array1.create int8_unsigned c_layout 1;
     }
+let int_size = Sys.word_size - 1
+let int2bin =
+  let buf = Bytes.create int_size in
+  fun n ->
+    for i = 0 to int_size - 1 do
+      let pos = int_size - 1 - i in
+      Bytes.set buf pos (if n land (1 lsl i) != 0 then '1' else '0')
+    done;
+    (* skip leading zeros *)
+    match Bytes.index_opt buf '1' with
+    | None -> "0b0"
+    | Some i -> "0b" ^ Bytes.sub_string buf i (int_size - i)
+
 
 let read_bit buf =
-        let bp = Array1.get buf.byte_position 0 in
+
+        let b = (Array1.get (CCVector.get buf.buffer 0)) 0 in
+        Printf.printf "read_bit %s\n"  (int2bin b);
+
+        let bp = Array1.get (CCVector.get buf.buffer 0) 0 in
         if bp >= CCVector.length buf.buffer then
             None
         else
 
-        let bp = Array1.get buf.byte_position 0 in
         let bip = Array1.get buf.bit_position 0 in
-        let byte = CCVector.get buf.buffer bp in
 
         let bit = Int.equal (Int.logand (Int.shift_right bp (Int.sub 7  bip) )  1) 1 in
 
         Array1.set buf.bit_position 0 (Int.add bip  1);
         if Int.equal( Array1.get buf.bit_position 0)  8 then(
-            let cb = Array1.get buf.byte_position 0 in
             Array1.set buf.byte_position 0 (bp+1);
             Array1.set buf.bit_position 0 0;
         );
