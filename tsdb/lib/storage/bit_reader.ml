@@ -30,14 +30,14 @@ let read_bit buf =
         let b = (Array1.get (CCVector.get buf.buffer 0)) 0 in
         Printf.printf "read_bit %s\n"  (int2bin b);
 
-        let bp = Array1.get (CCVector.get buf.buffer 0) 0 in
+        let bp = Array1.get buf.byte_position 0 in
         if bp >= CCVector.length buf.buffer then
             None
         else
 
         let bip = Array1.get buf.bit_position 0 in
 
-        let bit = Int.equal (Int.logand (Int.shift_right bp (Int.sub 7  bip) )  1) 1 in
+        let bit = Int.equal (Int.logand (Int.shift_right b (Int.sub 7  bip) )  1) 1 in
 
         Array1.set buf.bit_position 0 (Int.add bip  1);
         if Int.equal( Array1.get buf.bit_position 0)  8 then(
